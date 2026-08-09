@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "FlowPilot API - AI-powered workflow automation backend",
+  "license": "MIT",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",

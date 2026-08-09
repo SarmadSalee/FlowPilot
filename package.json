@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "FlowPilot - AI-powered business automation platform",
+  "license": "MIT",
   "workspaces": [
     "backend",
     "frontend"

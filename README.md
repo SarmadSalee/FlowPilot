@@ -228,6 +228,12 @@ Set `DEMO_MODE=false` and provide real API keys to route AI calls to live provid
 
 ---
 
+## Contributing
+
+Contributions are welcome — read [CONTRIBUTING.md](CONTRIBUTING.md) to get started. Please follow our [Code of Conduct](CODE_OF_CONDUCT.md) and report security issues privately per [SECURITY.md](SECURITY.md).
+
+---
+
 ## License
 
-Private demo / portfolio project. All product names and company names in seed data are fictional.
+Distributed under the [MIT License](LICENSE). All product names and company names in seed data are fictional.
