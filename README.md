@@ -4,13 +4,11 @@
 
 **AI-powered business automation that works for you.**
 
-Connect your business tools, automate repetitive workflows, and let AI handle the work.
-
 </div>
 
-FlowPilot is a full-stack, production-quality SaaS application for building, running, monitoring and analyzing AI-automated workflows. It is designed as a portfolio / demonstration project: a cohesive, polished product — not a CRUD prototype — with a visual workflow builder, an AI workflow generator, AI agents, integrations, executions, analytics, templates, team management, and billing.
+FlowPilot is a full-stack, production-ready SaaS application for building, running, monitoring and analyzing AI-automated workflows. It ships with a visual workflow builder, an AI workflow generator, AI agents, integrations, executions, analytics, templates, team management, and billing — all behind a coherent, token-based design system with light and dark themes.
 
-> **Demo mode is enabled by default.** No API keys, integrations or external services are required — AI and integrations are simulated so the whole product can be demoed end to end.
+> **Demo mode is on by default.** No API keys or external services needed — AI, integrations and billing are simulated so the entire product runs end to end offline.
 
 ---
 
@@ -18,92 +16,44 @@ FlowPilot is a full-stack, production-quality SaaS application for building, run
 
 <div align="center">
 
-<img src="assets/Screenshot%202026-08-10%20002211.png" alt="FlowPilot app preview" width="88%" />
+<img src="assets/Screenshot%202026-08-10%20002211.png" alt="FlowPilot landing page" width="88%" />
+<br />
+<sub>Landing page</sub>
 
-<br/><br/>
+<br /><br />
 
-<img src="assets/Screenshot%202026-08-10%20000445.png" alt="FlowPilot app preview" width="44%" />
-<img src="assets/Screenshot%202026-08-10%20002311.png" alt="FlowPilot app preview" width="44%" />
+<img src="assets/Screenshot%202026-08-10%20000445.png" alt="FlowPilot visual workflow builder" width="47%" />&nbsp;&nbsp;<img src="assets/Screenshot%202026-08-10%20002311.png" alt="FlowPilot AI Creator" width="47%" />
+<br />
+<sub>Visual workflow builder &nbsp;·&nbsp; AI Creator</sub>
 
 </div>
-
-Screenshots live in [`assets/`](assets/) and are captured from the current demo build.
 
 ---
 
 ## Features
 
-### Core platform
-- **Visual workflow builder** — drag-and-drop React Flow canvas with triggers, AI steps, conditions, actions and utilities; node inspector, duplicate, enable/disable, connect, run history.
-- **AI workflow creator** — describe a workflow in plain English; FlowPilot generates a node graph to approve, edit, regenerate or save.
-- **AI agents** — create specialized agents (sales, support, lead qualification…) with instructions, model, temperature, tools, memory and execution limits; track runs, success rate, tokens and latency.
-- **Executions** — per-step execution timelines with success / failed / running / waiting statuses, durations, messages and input/output payloads.
-- **Analytics** — executions, success rate, failed runs, AI tasks, API usage, time-saved and cost estimates with charts.
+### Build
+- **Visual workflow builder** — drag-and-drop React Flow canvas with triggers, AI steps, conditions, actions and utilities; node inspector, duplicate, enable/disable, connect and run history.
+- **AI Creator** — describe a workflow in plain English; FlowPilot generates a node graph you can approve, edit, regenerate or save.
 - **Templates** — prebuilt workflows (lead qualification, email follow-up, support assistant, invoice processing, meeting summary) with preview and one-click install.
-- **Integrations marketplace** — Gmail, Slack, Google Sheets, HubSpot, Salesforce, Stripe, WhatsApp, Webhooks, OpenAI, Anthropic, DeepSeek; connect/disconnect with simulated credentials in demo mode.
-- **Team management** — roles (owner / admin / member / viewer), invites, role changes, activity log.
-- **Billing** — Free / Pro / Business plans with mock Stripe checkout.
-- **Settings** — profile (name, email), profile image upload with **crop** + a gallery of preset avatars, company, security (change password), notifications, real API-key creation / revocation.
+
+### Run & monitor
+- **AI agents** — create specialized agents (sales, support, lead qualification…) with instructions, model, temperature, tools, memory and execution limits.
+- **Executions** — per-step timelines with success / failed / running / waiting statuses, durations, and input/output payloads.
 - **Dashboard** — stats, recent executions, performance charts, AI usage, credits and quick actions.
+- **Analytics** — success rate, failed runs, AI tasks, API usage, time saved and cost estimates with charts.
+
+### Connect & manage
+- **Integrations marketplace** — Gmail, Slack, Google Sheets, HubSpot, Salesforce, Stripe, WhatsApp, Webhooks, OpenAI, Anthropic, DeepSeek.
+- **Team management** — owner / admin / member / viewer roles, invites, role changes and an activity log.
+- **Billing** — Free / Pro / Business plans with mock Stripe checkout.
+- **Settings** — profile (name, email), profile photo upload with **crop** plus a gallery of preset avatars, company details, password change, notifications, and real API-key creation / revocation.
 - **Onboarding** — goal → tools → natural-language description → AI-generated workflow review → save.
 
-### UX & polish
-- **Light & dark theme** — full light/dark design system with a persisted toggle across the app and the marketing site.
-- Cohesive token-based design system (colors, status tints, cards, buttons, forms) built with Tailwind.
-- Fully responsive: sidebar → mobile drawer, adaptive grids, responsive workflow canvas.
-
-### Auth & security
-- Email/password authentication with bcrypt (cost 12) hashing.
-- JWT sessions; organization-level data isolation on every query.
-- Zod input validation, rate limiting, Helmet, CORS.
-- API keys are SHA-256 hashed before storage.
-- Google OAuth structure reserved for future implementation.
-
----
-
-## Architecture
-
-The project is a monorepo with two npm workspaces.
-
-```
-FlowPilot/
-├── assets/                  # README screenshots
-├── backend/                 # Express + TypeScript REST API
-│   ├── src/
-│   │   ├── app.ts           # app bootstrap (helmet, cors, rate limit, routes)
-│   │   ├── server.ts        # entrypoint (connect db, auto-seed demo data)
-│   │   ├── routes/          # REST route definitions
-│   │   ├── controllers/     # request/response layer
-│   │   ├── services/        # business logic layer
-│   │   ├── models/          # Mongoose schemas
-│   │   ├── automation/      # workflow engine + node definitions
-│   │   ├── ai/              # provider abstraction (OpenAI, Anthropic, DeepSeek, Mock)
-│   │   ├── middleware/      # auth, validation, errors, rate limiting
-│   │   ├── config/          # env + db connection
-│   │   ├── seed/            # realistic demo data
-│   │   ├── validation/      # Zod schemas
-│   │   └── utils/           # error helpers, JWT, HTTP responses
-│   └── .env.example
-└── frontend/                # React + Vite + TS + Tailwind SPA
-    └── src/
-        ├── pages/           # route-level views (dashboard, builder, auth, …)
-        ├── components/      # layout + shared UI primitives
-        ├── lib/             # api client, types, utils
-        ├── store/           # zustand auth + theme stores
-        └── App.tsx          # routing
-```
-
-### Workflow engine
-`backend/src/automation/engine.ts` executes a workflow graph with BFS traversal:
-
-- Trigger nodes seed execution; conditions branch on `TRUE`/`FALSE` handles.
-- Node settings (e.g. prompt, field, threshold, output key) resolve `{{template}}` placeholders against execution context.
-- AI nodes run through the provider abstraction; disabled nodes are skipped (pass-through).
-- Every step is logged to an `Execution` document with status, duration, input/output and error.
-- In demo mode all external calls are simulated.
-
-### AI provider abstraction
-`backend/src/ai/` resolves a provider by name: `openai`, `anthropic`, `deepseek` or `mock`. Providers are called only when the matching `*_API_KEY` exists; otherwise a simulated provider returns deterministic, structured results — so the product runs fully offline.
+### Experience
+- **Light & dark theme** — full design-system theming with a persisted toggle across the app and marketing site.
+- Responsive: sidebar → mobile drawer, adaptive grids, responsive canvas.
+- Cohesive token-based styling (colors, status tints, cards, buttons, forms).
 
 ---
 
@@ -119,7 +69,7 @@ FlowPilot/
 
 ---
 
-## Installation
+## Getting started
 
 Requirements: **Node.js ≥ 20**, **npm ≥ 9**. MongoDB is optional in demo mode.
 
@@ -129,19 +79,80 @@ npm install
 
 # 2. Configure environment
 cp backend/.env.example backend/.env   # then edit if needed
-# (optional) cp frontend/.env.example frontend/.env
 
 # 3. Seed demo data (optional — the API also auto-seeds on first boot in demo mode)
 npm run seed
 ```
 
-Root `.env.example` documents every variable; the backup sections are grouped in `backend/.env`.
+### Run locally
+
+```bash
+npm run dev             # backend on :5000 + frontend on :5173
+# individually:
+npm run dev:backend     # tsx watch
+npm run dev:frontend    # Vite dev server
+```
+
+Open http://localhost:5173 for the app and http://localhost:5000/api/health for the API.
+
+### Demo credentials
+
+| Field    | Value                   |
+|----------|-------------------------|
+| Email    | `sarmad@flowpilot.app`  |
+| Password | `Demo1234!`             |
+
+The seeded workspace (`FlowPilot Labs`, Pro plan) includes 5 workflows, ~1,180 executions across the last 30 days, 5 AI agents, 5 templates, connected integrations, notifications and activity logs — so the dashboard looks populated on first launch.
+
+**Demo workflow** — *"AI Lead Qualification & Follow-up"*: hit **Run Demo** in the top bar (or "Test run" in the builder) and watch the execution flow through lead → AI analysis → score condition → CRM / email / task (or nurture). Every step is simulated with realistic status updates.
+
+---
+
+## Project structure
+
+```
+FlowPilot/
+├── assets/                  # README screenshots
+├── backend/                 # Express + TypeScript REST API
+│   └── src/
+│       ├── app.ts           # bootstrap (helmet, cors, rate limit, routes)
+│       ├── server.ts        # entrypoint (connect db, auto-seed demo data)
+│       ├── routes/          # REST route definitions
+│       ├── controllers/     # request/response layer
+│       ├── services/        # business logic layer
+│       ├── models/          # Mongoose schemas
+│       ├── automation/      # workflow engine + node definitions
+│       ├── ai/              # provider abstraction (OpenAI, Anthropic, DeepSeek, Mock)
+│       ├── middleware/      # auth, validation, errors, rate limiting
+│       ├── config/          # env + db connection
+│       ├── seed/            # realistic demo data
+│       ├── validation/      # Zod schemas
+│       └── utils/           # error helpers, JWT, HTTP responses
+└── frontend/                # React + Vite + TS + Tailwind SPA
+    └── src/
+        ├── pages/           # route-level views (dashboard, builder, auth, …)
+        ├── components/      # layout + shared UI primitives
+        ├── lib/             # api client, types, utils
+        ├── store/           # zustand auth + theme stores
+        └── App.tsx          # routing
+```
+
+### How the engine works
+`backend/src/automation/engine.ts` executes a workflow graph via BFS traversal:
+- Trigger nodes seed execution; conditions branch on `TRUE` / `FALSE` handles.
+- Node settings resolve `{{template}}` placeholders against the live execution context.
+- AI nodes run through the provider abstraction; disabled nodes are skipped (pass-through).
+- Every step is logged to an `Execution` document with status, duration, input/output and error.
+- In demo mode all external calls are simulated.
+
+### AI provider abstraction
+`backend/src/ai/` resolves a provider by name — `openai`, `anthropic`, `deepseek` or `mock`. Providers are only called when the matching `*_API_KEY` exists; otherwise a simulated provider returns deterministic, structured results so the product runs fully offline.
 
 ---
 
 ## Environment variables
 
-See [`.env.example`](.env.example) and `backend/.env.example`. The important ones:
+See [`.env.example`](.env.example) and `backend/.env.example`:
 
 | Variable                | Purpose                                          |
 |-------------------------|--------------------------------------------------|
@@ -154,42 +165,11 @@ See [`.env.example`](.env.example) and `backend/.env.example`. The important one
 | `DEMO_MODE`             | `true` (default) → simulated AI, integrations, billing |
 | `DEMO_EMAIL` / `DEMO_PASSWORD` | Seed demo-account credentials             |
 
-> Never commit real secrets. `.env` files are git-ignored.
+> Never commit real secrets — `.env` files are git-ignored.
 
 ---
 
-## Running locally
-
-```bash
-# Both servers (backend on :5000, frontend on :5173)
-npm run dev
-
-# Individually
-npm run dev:backend     # nodemon-style reload via tsx watch
-npm run dev:frontend    # Vite dev server
-```
-
-Open http://localhost:5173 (frontend) and http://localhost:5000/api/health (API).
-
-Demo data is seeded automatically on first boot when `DEMO_MODE=true` (or via `npm run seed`).
-
----
-
-## Demo credentials
-
-| Field    | Value                   |
-|----------|-------------------------|
-| Email    | `sarmad@flowpilot.app`  |
-| Password | `Demo1234!`             |
-
-The seeded workspace (`FlowPilot Labs`, Pro plan) includes 5 workflows, ~1,180 executions across the last 30 days, 5 AI agents, 5 templates, connected integrations, notifications and activity logs — so the dashboard looks populated on first launch.
-
-### Demo workflow
-**"AI Lead Qualification & Follow-up"** — hit **Run Demo** in the top bar (or "Test run" in the builder) and watch the execution move through lead → AI analysis → score condition → CRM/email/task (or nurture). In demo mode every step is simulated with realistic status updates.
-
----
-
-## API documentation
+## API overview
 
 All endpoints live under `/api` and return `{ success, data }` (or `{ success, error }`).
 
@@ -211,47 +191,43 @@ All endpoints live under `/api` and return `{ success, data }` (or `{ success, e
 
 ---
 
-## Database setup
+## Database
 
-The backend reads `MONGODB_URI`. You have three options:
+The backend reads `MONGODB_URI`:
 
 1. **Local MongoDB** (`mongodb://127.0.0.1:27017/flowpilot`) — install and run MongoDB locally.
 2. **MongoDB Atlas** — use a `mongodb+srv://` connection string.
 3. **None (demo mode)** — if MongoDB is unreachable and `DEMO_MODE=true`, the backend starts `mongodb-memory-server` automatically. Data resets when the process stops.
 
-Seed:
-```bash
-npm run seed   # idempotent demo data (user, org, workflows, executions, agents, templates)
-```
+Seed idempotent demo data with `npm run seed`.
 
 ---
 
 ## Demo mode
 
-- **AI**: no keys → `mock` provider returns deterministic, structured JSON for all AI steps and the workflow generator.
-- **Integrations**: "connect" succeeds with generated credentials; runs emit realistic simulated outputs.
-- **Billing**: checkout is a mock stripe session.
-- **Executions**: the engine simulates step latencies, branches and occasional failures with full per-step logs.
-- **Dashboard**: auto-seeded with realistic 30-day data on first boot.
+- **AI** — no keys → `mock` provider returns deterministic, structured JSON for all AI steps and the generator.
+- **Integrations** — "connect" succeeds with generated credentials; runs emit realistic simulated outputs.
+- **Billing** — checkout is a mock Stripe session.
+- **Executions** — the engine simulates step latencies, branches and occasional failures with per-step logs.
+- **Dashboard** — auto-seeded with realistic 30-day data on first boot.
 
-To disable simulation, set `DEMO_MODE=false` and provide the relevant API keys — the engine then routes AI calls to the real providers while keeping integrations/billing simulated.
+Set `DEMO_MODE=false` and provide real API keys to route AI calls to live providers while keeping integrations/billing simulated.
 
 ---
 
-## Future roadmap
+## Roadmap
 
-- **Reset-password email delivery** — wire a real email provider (SendGrid / Resend) instead of returning the demo token in the response.
-- **Real integration execution** — replace `simulateAction` with real HTTP/OAuth adapters for Gmail, Slack, HubSpot, Stripe, Sheets.
-- **True LLM workflow generation** — upscale the deterministic generator with an LLM call when an API key is present.
-- **Real Stripe checkout** and webhook handling.
-- **Google OAuth** sign-in.
-- **Streaming agent runs** with SSE/websocket live step updates in the builder.
-- **Multi-workspace switching** and Enterprise SSO.
-- **Pagination** on workflows/executions and code-splitting the frontend bundle.
+- Real password-reset email delivery (SendGrid / Resend).
+- Real integration execution via HTTP/OAuth adapters (Gmail, Slack, HubSpot, Stripe, Sheets).
+- True LLM-driven workflow generation when an API key is configured.
+- Real Stripe checkout and webhooks.
+- Google OAuth sign-in.
+- Streaming agent runs with live step updates in the builder.
+- Multi-workspace switching and Enterprise SSO.
+- Pagination for workflows/executions and code-splitting the frontend bundle.
 
 ---
 
 ## License
 
-Private demo / portfolio project. All product names and company names in seed data are fictional.#   F l o w P i l o t  
- 
+Private demo / portfolio project. All product names and company names in seed data are fictional.
