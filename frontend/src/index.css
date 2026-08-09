@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   FlowPilot Design Tokens
+   Single source of truth for the visual system.
+   Light theme is the default; `.dark` overrides are provided.
+   ============================================================ */
+:root {
+  --c-background: 247 248 250; /* #F7F8FA */
+  --c-surface: 255 255 255; /* #FFFFFF */
+  --c-surface-soft: 241 243 245; /* #F1F3F5 */
+  --c-border: 226 229 233; /* #E2E5E9 */
+  --c-border-strong: 208 213 221; /* #D0D5DD */
+  --c-text: 23 32 51; /* #172033 */
+  --c-text-secondary: 102 112 133; /* #667085 */
+  --c-text-muted: 152 162 179; /* #98A2B3 */
+  --c-brand: 79 70 229; /* #4F46E5 */
+  --c-brand-soft: 67 56 202; /* #4338CA */
+  --c-brand-deep: 55 48 163; /* hover */
+  --c-brand-faint: 238 242 255; /* #EEF2FF */
+  --c-ai: 124 58 237; /* #7C3AED */
+  --c-info: 37 99 235; /* #2563EB */
+
+  --c-success: 22 163 74; /* #16A34A */
+  --c-success-bg: 240 253 244; /* #F0FDF4 */
+  --c-warning: 217 119 6; /* #D97706 */
+  --c-warning-bg: 255 251 235; /* #FFFBEB */
+  --c-error: 220 38 38; /* #DC2626 */
+  --c-error-bg: 254 242 242; /* #FEF2F2 */
+  --c-info-bg: 239 246 255; /* #EFF6FF */
+  --c-ai-bg: 245 243 255; /* #F5F3FF */
+
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.dark {
+  --c-background: 17 24 39; /* #111827 */
+  --c-surface: 31 41 55; /* #1F2937 */
+  --c-surface-soft: 24 33 47;
+  --c-border: 55 65 81; /* #374151 */
+  --c-border-strong: 75 85 99;
+  --c-text: 249 250 251; /* #F9FAFB */
+  --c-text-secondary: 156 163 175; /* #9CA3AF */
+  --c-text-muted: 107 114 128;
+  --c-brand: 129 140 248; /* #818CF8 */
+  --c-brand-soft: 165 180 252;
+  --c-brand-deep: 99 102 241;
+  --c-brand-faint: 30 27 75;
+  --c-ai: 167 139 250;
+  --c-info: 96 165 250;
+  --c-success: 52 211 153;
+  --c-success-bg: 6 78 59;
+  --c-warning: 251 191 36;
+  --c-warning-bg: 69 26 3;
+  --c-error: 248 113 113;
+  --c-error-bg: 69 10 10;
+  --c-info-bg: 23 37 84;
+  --c-ai-bg: 46 16 101;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-ink antialiased font-sans;
+  }
+  ::selection {
+    background: rgba(79, 70, 229, 0.16);
+    color: #4338ca;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(102, 112, 133, 0.3) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: rgba(102, 112, 133, 0.3);
+    border-radius: 999px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@layer components {
+  /* ---- Cards ---- */
+  .card {
+    @apply bg-surface border border-line rounded-xl;
+    box-shadow: var(--shadow-card);
+  }
+
+  /* ---- Buttons ---- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold
+      transition-colors duration-150 select-none disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+  .btn-md {
+    @apply px-4 py-2.5;
+  }
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary-deep active:bg-primary-deep;
+  }
+  .btn-ghost {
+    @apply bg-surface border border-line-strong text-ink hover:bg-surface-soft;
+  }
+  .btn-soft {
+    @apply bg-primary-faint text-primary-soft border border-primary/20 hover:bg-[#E4E8FD];
+  }
+  .btn-danger {
+    @apply bg-danger text-white hover:bg-[#B91C1C];
+  }
+
+  /* ---- Forms ---- */
+  .label {
+    @apply block text-xs font-medium text-ink-dim mb-1.5;
+  }
+  .input-base {
+    @apply w-full rounded-lg bg-surface border border-line-strong px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint
+      outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/15;
+  }
+
+  /* ---- Chips / tags ---- */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-md border border-line bg-surface-soft px-2.5 py-1 text-xs font-medium text-ink-dim;
+  }
+}
+
+/* Solid brand heading accent (replaces old gradient text) */
+.text-gradient,
+.text-gradient-purple,
+.text-gradient-sky,
+.text-gradient-amber {
+  color: var(--c-text);
+}
+.text-gradient {
+  color: rgb(var(--c-brand-soft));
+}
+
+/* Workflow canvas / React Flow (light) */
+.react-flow__attribution {
+  background: transparent !important;
+  color: #667085 !important;
+}
+.react-flow__controls {
+  @apply !rounded-lg !border !border-line !bg-surface !overflow-hidden !shadow-sm;
+}
+.react-flow__controls-button {
+  @apply !bg-surface !border-line !text-ink !w-8 !h-8 hover:!bg-surface-soft !border-b;
+}
+.react-flow__edge-path {
+  stroke: #98a2b3;
+}
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: rgb(var(--c-brand));
+}
