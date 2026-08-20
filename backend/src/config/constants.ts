@@ -8,9 +8,9 @@ export const constants = {
   },
   executionStatuses: ['success', 'failed', 'running', 'waiting'] as const,
   nodeTypes: {
-    TRIGGER: ['new_lead', 'new_email', 'form_submitted', 'schedule', 'webhook', 'new_customer', 'new_order'],
+    TRIGGER: ['new_lead', 'new_email', 'form_submitted', 'schedule', 'webhook', 'new_customer', 'new_order', 'lead_scored', 'lead_activity'],
     AI: ['ai_analyze', 'ai_classify', 'ai_extract', 'ai_summarize', 'ai_generate', 'ai_agent'],
-    ACTION: ['send_email', 'send_notification', 'create_crm_record', 'update_crm', 'create_task', 'send_webhook', 'add_to_sheet'],
+    ACTION: ['send_email', 'send_notification', 'create_crm_record', 'update_crm', 'create_task', 'send_webhook', 'add_to_sheet', 'update_lead_score', 'set_lead_intent', 'set_lead_qualification', 'notify_sales'],
     CONDITION: ['if_else', 'lead_score', 'customer_type', 'email_contains', 'field_exists'],
     UTILITY: ['delay', 'formatter', 'filter', 'merge'],
   } as const,

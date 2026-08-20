@@ -54,6 +54,28 @@ export const NODE_DEFINITIONS: NodeDefinition[] = [
     icon: 'shopping-bag',
     configFields: []
   },
+  {
+    id: 'lead_scored', key: 'lead_scored', label: 'Lead Scored', type: 'trigger',
+    category: 'Triggers', description: 'Triggers whenever a lead\'s score changes.',
+    icon: 'gauge',
+    configFields: [
+      { key: 'threshold', label: 'Minimum score', type: 'number', defaultValue: 0 },
+      { key: 'onIncrease', label: 'Only when score increases', type: 'select', options: [{ label: 'Any change', value: 'any' }, { label: 'Increase only', value: 'increase' }], defaultValue: 'any' }
+    ]
+  },
+  {
+    id: 'lead_activity', key: 'lead_activity', label: 'Lead Activity', type: 'trigger',
+    category: 'Triggers', description: 'Triggers on a specific lead activity event.',
+    icon: 'activity',
+    configFields: [
+      { key: 'eventType', label: 'Event type', type: 'select', options: [
+        { label: 'Any activity', value: 'any' }, { label: 'Email opened', value: 'email_opened' },
+        { label: 'Email replied', value: 'email_replied' }, { label: 'Website visited', value: 'website_visited' },
+        { label: 'Demo requested', value: 'demo_requested' }, { label: 'Meeting booked', value: 'meeting_booked' },
+        { label: 'Form submitted', value: 'form_submitted' }, { label: 'Unsubscribed', value: 'unsubscribed' }
+      ], defaultValue: 'any' }
+    ]
+  },
 
   // AI ACTIONS
   {
@@ -175,6 +197,43 @@ export const NODE_DEFINITIONS: NodeDefinition[] = [
     configFields: [
       { key: 'sheetId', label: 'Sheet ID', type: 'text' },
       { key: 'row', label: 'Row values (comma separated)', type: 'text', placeholder: '{{first_name}},{{email}}', required: true }
+    ]
+  },
+  {
+    id: 'update_lead_score', key: 'update_lead_score', label: 'Update Lead Score', type: 'action',
+    category: 'Actions', description: 'Changes the lead score by an amount or to a value.',
+    icon: 'gauge',
+    configFields: [
+      { key: 'mode', label: 'Mode', type: 'select', options: [{ label: 'Increase by', value: 'increase' }, { label: 'Decrease by', value: 'decrease' }, { label: 'Set to', value: 'set' }], defaultValue: 'increase' },
+      { key: 'value', label: 'Amount / value', type: 'number', defaultValue: 10, required: true }
+    ]
+  },
+  {
+    id: 'set_lead_intent', key: 'set_lead_intent', label: 'Set Lead Intent', type: 'action',
+    category: 'Actions', description: 'Sets the lead intent level.',
+    icon: 'target',
+    configFields: [
+      { key: 'value', label: 'Intent', type: 'select', options: [{ label: 'Low', value: 'low' }, { label: 'Medium', value: 'medium' }, { label: 'High', value: 'high' }], defaultValue: 'high' }
+    ]
+  },
+  {
+    id: 'set_lead_qualification', key: 'set_lead_qualification', label: 'Set Qualification', type: 'action',
+    category: 'Actions', description: 'Sets the lead qualification state.',
+    icon: 'badge-check',
+    configFields: [
+      { key: 'value', label: 'Qualification', type: 'select', options: [
+        { label: 'Hot', value: 'hot' }, { label: 'Warm', value: 'warm' }, { label: 'Cold', value: 'cold' },
+        { label: 'Qualified', value: 'qualified' }, { label: 'Unqualified', value: 'unqualified' }
+      ], defaultValue: 'qualified' }
+    ]
+  },
+  {
+    id: 'notify_sales', key: 'notify_sales', label: 'Notify Sales', type: 'action',
+    category: 'Actions', description: 'Alerts the sales team about a lead.',
+    icon: 'bell-ring',
+    configFields: [
+      { key: 'channel', label: 'Channel', type: 'text', placeholder: '#sales', defaultValue: '#sales' },
+      { key: 'message', label: 'Message', type: 'textarea', placeholder: 'New hot lead: {{name}}', required: true }
     ]
   },
 

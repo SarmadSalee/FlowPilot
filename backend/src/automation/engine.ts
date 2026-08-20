@@ -379,6 +379,30 @@ export class WorkflowEngine {
       case 'action': {
         await sleepWhile(opts.simulate ? 500 : 200, opts.simulate);
         return during(async () => {
+          // Scoring actions modify the lead intelligence context.
+          if (node.key === 'update_lead_score') {
+            const mode = String(cfg.mode ?? 'increase');
+            const value = Number(cfg.value ?? 0);
+            const current = Number(context.score ?? 0);
+            const next = mode === 'set' ? value : mode === 'decrease' ? current - value : current + value;
+            context.score = Math.max(0, Math.min(100, Math.round(next)));
+            context.lead_score = context.score;
+            return { output: { score: context.score }, message: `Lead score ${mode}d to ${context.score}` };
+          }
+          if (node.key === 'set_lead_intent') {
+            context.intent = String(cfg.value ?? 'high');
+            return { output: { intent: context.intent }, message: `Intent set to ${context.intent}` };
+          }
+          if (node.key === 'set_lead_qualification') {
+            context.qualification = String(cfg.value ?? 'qualified');
+            return { output: { qualification: context.qualification }, message: `Qualification set to ${context.qualification}` };
+          }
+          if (node.key === 'notify_sales') {
+            const result = { channel: String(cfg.channel ?? '#sales'), status: 'sent' };
+            const outKey = String(cfg.outputKey ?? 'sales_notified');
+            context[outKey] = result;
+            return { output: result, message: 'Sales team notified' };
+          }
           const result = this.simulateAction(node, cfg);
           const outKey = String(cfg.outputKey ?? 'action_result');
           context[outKey] = result.output;

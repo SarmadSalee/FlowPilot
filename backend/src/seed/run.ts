@@ -9,6 +9,13 @@ import { Agent } from '../models/AIAgent';
 import { Template } from '../models/Template';
 import { NotificationModel } from '../models/Notification';
 import { ActivityLogModel } from '../models/ActivityLog';
+import { Lead } from '../models/Lead';
+import { LeadScore } from '../models/LeadScore';
+import { LeadScoreHistory } from '../models/LeadScoreHistory';
+import { LeadEvent } from '../models/LeadEvent';
+import { LeadAnalysis } from '../models/LeadAnalysis';
+import { ICPProfile } from '../models/ICPProfile';
+import { ScoringRule } from '../models/ScoringRule';
 import { getIntegrationsSeed } from '../services/integrationCatalog';
 
 interface GraphNode {
@@ -310,7 +317,7 @@ export async function seedDemoData(): Promise<void> {
   await getIntegrationsSeed();
   await seedTemplates();
 
-  // --- Notifications + Activity ----------------------------------------------------
+// --- Notifications + Activity ----------------------------------------------------
   const notifCount = await NotificationModel.countDocuments({ organizationId: org._id });
   if (notifCount === 0) {
     await NotificationModel.create([
@@ -320,6 +327,9 @@ export async function seedDemoData(): Promise<void> {
       { userId: user._id, organizationId: org._id, type: 'warning', title: 'Execution limit at 82%', body: 'Pro plan usage is trending up for this month.' },
     ]);
   }
+
+  // --- Lead intelligence demo data ------------------------------------------------
+  await seedLeadIntelligence(org._id);
 
   const actCount = await ActivityLogModel.countDocuments({ organizationId: org._id });
   if (actCount === 0) {
@@ -469,6 +479,215 @@ docs.push({
 
   await Execution.insertMany(docs);
   console.log(`[seed] inserted ${docs.length} executions`);
+}
+
+async function seedLeadIntelligence(orgId: unknown): Promise<void> {
+  const existingLeads = await Lead.countDocuments({ organizationId: orgId });
+  if (existingLeads > 0) return;
+
+  const now = Date.now();
+  const MIN = 60 * 1000;
+  const HOUR = 60 * MIN;
+  const DAY = 24 * HOUR;
+
+  const spec = [
+    { name: 'Sarah Khan', email: 'sarah.khan@helio.io', company: 'Helio Health', jobTitle: 'VP Operations', industry: 'Healthcare', companySize: '50-200', location: 'US', revenue: 12000000, source: 'Website form', leadType: 'Inbound', phone: '+1 415 555 0101', whatsapp: '+1 415 555 0101', score: 87, icp: 92, eng: 81, intent: 90, status: 'qualified', buyingStage: 'decision', qualification: 'hot', grade: 'B', tags: ['pricing', 'demo'], createdAt: now - 6 * DAY },
+    { name: 'John Smith', email: 'john@brightwave.ai', company: 'Brightwave', jobTitle: 'CTO', industry: 'SaaS', companySize: '10-50', location: 'UK', revenue: 3000000, source: 'LinkedIn', leadType: 'Inbound', score: 68, icp: 84, eng: 62, intent: 70, status: 'new', buyingStage: 'evaluation', qualification: 'warm', grade: 'C', tags: ['integration'], createdAt: now - 3 * DAY },
+    { name: 'Ahmed Ali', email: 'ahmed@northwind.io', company: 'Northwind Labs', jobTitle: 'Head of Sales', industry: 'SaaS', companySize: '200-500', location: 'UAE', revenue: 25000000, source: 'WhatsApp', leadType: 'Inbound', score: 44, icp: 78, eng: 40, intent: 45, status: 'new', buyingStage: 'interest', qualification: 'qualified', grade: 'C', tags: [], createdAt: now - 2 * DAY },
+    { name: 'Emily Park', email: 'emily@acme.io', company: 'Acme Corp', jobTitle: 'Marketing Director', industry: 'E-commerce', companySize: '500+', location: 'US', revenue: 50000000, source: 'Website form', leadType: 'Inbound', score: 31, icp: 55, eng: 22, intent: 25, status: 'unqualified', buyingStage: 'awareness', qualification: 'cold', grade: 'D', tags: [], createdAt: now - 4 * DAY },
+    { name: 'Daniel Okafor', email: 'daniel@vantage.co', company: 'Vantage Group', jobTitle: 'Founder', industry: 'Fintech', companySize: '10-50', location: 'UK', revenue: 4000000, source: 'Referral', leadType: 'Inbound', score: 95, icp: 97, eng: 94, intent: 98, status: 'converted', buyingStage: 'customer', qualification: 'hot', grade: 'A', tags: ['meeting-booked'], createdAt: now - 10 * DAY },
+    { name: 'Priya Sharma', email: 'priya@vantage.co', company: 'Northwind Labs', jobTitle: 'Growth Lead', industry: 'SaaS', companySize: '50-200', location: 'US', revenue: 8000000, source: 'Instagram', leadType: 'Inbound', score: 12, icp: 30, eng: 8, intent: 10, status: 'spam', buyingStage: 'awareness', qualification: 'unqualified', grade: 'D', tags: ['spam'], createdAt: now - 12 * HOUR },
+    { name: 'Marco Rossi', email: 'marco@brightwave.ai', company: 'Brightwave', jobTitle: 'Procurement', industry: 'Manufacturing', companySize: '1000+', location: 'Germany', revenue: 90000000, source: 'Website form', leadType: 'Outbound', score: 58, icp: 61, eng: 52, intent: 55, status: 'contacted', buyingStage: 'consideration', qualification: 'qualified', grade: 'C', tags: ['nurture'], createdAt: now - 1 * DAY },
+    { name: 'Aisha Malik', email: 'aisha@helio.io', company: 'Helio Health', jobTitle: 'Clinical Director', industry: 'Healthcare', companySize: '200-500', location: 'UAE', revenue: 30000000, source: 'Webinar', leadType: 'Inbound', score: 74, icp: 88, eng: 70, intent: 76, status: 'new', buyingStage: 'evaluation', qualification: 'warm', grade: 'B', tags: ['demo'], createdAt: now - 5 * HOUR },
+    { name: 'Tom Becker', email: 'tom@northwind.io', company: 'Northwind Labs', jobTitle: 'Data Analyst', industry: 'SaaS', companySize: '10-50', location: 'US', revenue: 2000000, source: 'LinkedIn', leadType: 'Outbound', score: 18, icp: 22, eng: 15, intent: 20, status: 'lost', buyingStage: 'awareness', qualification: 'unqualified', grade: 'D', tags: ['competitor'], createdAt: now - 9 * DAY },
+    { name: 'Fatima Noor', email: 'fatima@acme.io', company: 'Acme Corp', jobTitle: 'Sales VP', industry: 'E-commerce', companySize: '500+', location: 'US', revenue: 60000000, source: 'Website form', leadType: 'Inbound', score: 81, icp: 90, eng: 78, intent: 85, status: 'qualified', buyingStage: 'decision', qualification: 'hot', grade: 'B', tags: ['pricing', 'proposal'], createdAt: now - 36 * HOUR },
+  ];
+
+  const leads: Array<{ _id: unknown; name: string; score: number; qualification: string }> = [];
+  for (const s of spec) {
+    const lead = await Lead.create({
+      organizationId: orgId,
+      name: s.name,
+      email: s.email,
+      company: s.company,
+      jobTitle: s.jobTitle,
+      industry: s.industry,
+      companySize: s.companySize,
+      location: s.location,
+      website: s.company ? `https://${s.company.toLowerCase().replace(/\s+/g, '')}.com` : undefined,
+      revenue: s.revenue,
+      source: s.source,
+      leadType: s.leadType,
+      phone: s.phone,
+      whatsapp: s.whatsapp,
+      score: s.score,
+      icpScore: s.icp,
+      engagementScore: s.eng,
+      intentScore: s.intent,
+      grade: s.grade,
+      intent: s.intent >= 70 ? 'high' : s.intent >= 35 ? 'medium' : 'low',
+      qualification: s.qualification,
+      buyingStage: s.buyingStage,
+      confidence: 0.85 + Math.random() * 0.14,
+      status: s.status,
+      tags: s.tags,
+      firstSeenAt: new Date(s.createdAt),
+      lastActivityAt: new Date(now - Math.floor(Math.random() * 6) * HOUR),
+      createdAt: new Date(s.createdAt),
+      updatedAt: new Date(now - Math.floor(Math.random() * 6) * HOUR),
+    });
+    leads.push({ _id: lead._id, name: s.name, score: s.score, qualification: s.qualification });
+
+    await LeadScore.create({
+      organizationId: orgId,
+      leadId: lead._id,
+      score: s.score,
+      grade: s.grade,
+      intent: s.intent >= 70 ? 'high' : s.intent >= 35 ? 'medium' : 'low',
+      qualification: s.qualification,
+      buyingStage: s.buyingStage,
+      confidence: 0.85 + Math.random() * 0.14,
+      icpMatch: s.icp,
+      engagement: s.eng,
+      buyingIntent: s.intent,
+      factors: [
+        { label: s.intent >= 70 ? 'High buying intent detected' : 'Moderate engagement', delta: s.intent >= 70 ? 15 : 6, kind: 'positive', source: 'ai' },
+        { label: `ICP fit ${s.icp}%`, delta: 10, kind: 'positive', source: 'icp' },
+        { label: 'Engagement score baseline', delta: Math.round(s.eng * 0.3), kind: 'positive', source: 'event' },
+      ],
+      summary: `${s.name} scored ${s.score}/100 — ${s.qualification}.`,
+      explanation: `${s.name} from ${s.company} shows ${s.intent >= 70 ? 'strong' : 'moderate'} intent with an ICP fit of ${s.icp}%.`,
+      recommendedAction: {
+        title: s.score >= 80 ? 'Contact immediately' : s.score >= 60 ? 'Send follow-up' : 'Add to nurture campaign',
+        steps: s.score >= 80 ? ['Send personalized proposal', 'Offer a demo', 'Follow up within 15 minutes'] : s.score >= 60 ? ['Send pricing details', 'Schedule a discovery call'] : ['Add to nurture sequence', 'Re-engage in 7 days'],
+        urgency: s.score >= 80 ? 'high' : s.score >= 60 ? 'medium' : 'low',
+      },
+      provider: 'mock',
+      model: 'mock',
+      analyzedAt: new Date(s.createdAt),
+    });
+
+    await LeadAnalysis.create({
+      organizationId: orgId,
+      leadId: lead._id,
+      score: s.score,
+      intent: s.intent >= 70 ? 'high' : s.intent >= 35 ? 'medium' : 'low',
+      qualification: s.qualification,
+      buyingStage: s.buyingStage,
+      confidence: 0.85 + Math.random() * 0.14,
+      reasons: [`ICP fit ${s.icp}%`, s.intent >= 70 ? 'Strong buying intent' : 'Moderate engagement', `${s.eng} engagement score`],
+      summary: `${s.name} scored ${s.score}/100 — ${s.qualification}.`,
+      recommendedAction: s.score >= 80 ? 'Contact immediately' : s.score >= 60 ? 'Send follow-up' : 'Add to nurture campaign',
+      recommendedSteps: s.score >= 80 ? ['Send personalized proposal', 'Offer a demo', 'Follow up within 15 minutes'] : ['Send pricing details', 'Schedule a discovery call'],
+      source: 'initial',
+      provider: 'mock',
+      model: 'mock',
+      inputSnapshot: { name: s.name, company: s.company },
+      createdAt: new Date(s.createdAt),
+    });
+  }
+
+  // Score history + events for a few leads so timelines and the live feed look alive.
+  const story = [
+    { idx: 0, score: 87, history: [{ prev: 42, next: 48, reason: 'Email opened' }, { prev: 48, next: 63, reason: 'Pricing link clicked' }, { prev: 63, next: 82, reason: 'Pricing intent detected' }, { prev: 82, next: 87, reason: 'Asked about pricing' }], events: [{ type: 'email_opened' }, { type: 'link_clicked', payload: { text: 'Clicked the pricing page link' } }, { type: 'email_replied', payload: { text: "I'd like to see the pricing for the Business plan." } }] },
+    { idx: 1, score: 68, history: [{ prev: 20, next: 35, reason: 'Website visited' }, { prev: 35, next: 51, reason: 'Clicked demo link' }, { prev: 51, next: 68, reason: 'Replied to campaign' }], events: [{ type: 'website_visited' }, { type: 'link_clicked', payload: { text: 'Clicked demo link' } }, { type: 'email_replied', payload: { text: 'Interested in seeing the demo for integrations.' } }] },
+    { idx: 2, score: 44, history: [{ prev: 60, next: 51, reason: 'No response for 3 days' }, { prev: 51, next: 44, reason: 'No engagement' }], events: [{ type: 'no_engagement', payload: { text: 'No response for 3 days' } }] },
+  ];
+
+  for (const s of story) {
+    const lead = leads[s.idx];
+    s.history.forEach((h, i) => {
+      const at = new Date(now - (s.history.length - i) * 3 * HOUR);
+      LeadScoreHistory.create({
+        organizationId: orgId,
+        leadId: lead._id,
+        score: h.next,
+        previousScore: h.prev,
+        delta: h.next - h.prev,
+        reason: h.reason,
+        source: 'event',
+        eventType: s.events[i]?.type,
+        createdAt: at,
+        updatedAt: at,
+      });
+    });
+    s.events.forEach((e, i) => {
+      const at = new Date(now - (s.events.length - i) * 3 * HOUR);
+      LeadEvent.create({
+        organizationId: orgId,
+        leadId: lead._id,
+        type: e.type,
+        channel: e.type.includes('email') ? 'email' : e.type.includes('whatsapp') ? 'whatsapp' : 'web',
+        payload: e.payload ?? {},
+        scoreDelta: 0,
+        processed: true,
+        processedAt: at,
+        createdAt: at,
+        updatedAt: at,
+      });
+    });
+  }
+
+  // ICP profile
+  const icpCount = await ICPProfile.countDocuments({ organizationId: orgId });
+  if (icpCount === 0) {
+    await ICPProfile.create({
+      organizationId: orgId,
+      name: 'Default ICP',
+      industries: ['SaaS', 'Healthcare', 'Fintech'],
+      companySizeMin: 10,
+      companySizeMax: 500,
+      locations: ['US', 'UK', 'UAE'],
+      jobTitles: ['CEO', 'Founder', 'CTO', 'Head of Sales', 'VP Operations'],
+      minRevenue: 1000000,
+      keywords: ['automation', 'ai', 'growth'],
+      enabled: true,
+    });
+  }
+
+  // Scoring rules (including one demonstrating the natural-language concept)
+  const ruleCount = await ScoringRule.countDocuments({ organizationId: orgId });
+  if (ruleCount === 0) {
+    await ScoringRule.create([
+      {
+        organizationId: orgId,
+        name: 'Pricing intent boost',
+        description: 'Whenever a lead replies to an email and asks about pricing, increase their score by 25 and notify the sales team.',
+        trigger: 'lead_event',
+        eventType: 'email_replied',
+        conditions: [{ field: 'score', operator: 'gte', value: 0 }],
+        action: { type: 'increase', value: 25 },
+        priority: 10,
+        enabled: true,
+        source: 'ai',
+      },
+      {
+        organizationId: orgId,
+        name: 'Demo request alert',
+        description: 'When a lead requests a demo, notify the sales team immediately.',
+        trigger: 'lead_event',
+        eventType: 'demo_requested',
+        conditions: [],
+        action: { type: 'notify', target: 'sales_team' },
+        priority: 20,
+        enabled: true,
+        source: 'user',
+      },
+      {
+        organizationId: orgId,
+        name: 'Hot lead threshold',
+        description: 'When a lead score reaches 80, mark them as high intent.',
+        trigger: 'score_threshold',
+        conditions: [{ field: 'score', operator: 'gte', value: 80 }],
+        action: { type: 'set_intent', value: 'high' },
+        priority: 30,
+        enabled: true,
+        source: 'user',
+      },
+    ]);
+  }
+
+  console.log(`[seed] inserted ${leads.length} demo leads with intelligence`);
 }
 
 function stepLog(

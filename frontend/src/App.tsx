@@ -15,6 +15,9 @@ import Workflows from "@/pages/Workflows";
 import WorkflowBuilder from "@/pages/WorkflowBuilder";
 import AICreator from "@/pages/AICreator";
 import Agents from "@/pages/Agents";
+import Leads from "@/pages/Leads";
+import LeadDetail from "@/pages/LeadDetail";
+import LeadRules from "@/pages/LeadRules";
 import Integrations from "@/pages/Integrations";
 import Executions from "@/pages/Executions";
 import ExecutionDetail from "@/pages/ExecutionDetail";
@@ -95,6 +98,9 @@ export default function App() {
         <Route path="/workflows/:id" element={<WorkflowBuilder />} />
         <Route path="/ai/create" element={<AICreator />} />
         <Route path="/agents" element={<Agents />} />
+        <Route path="/leads" element={<Leads />} />
+        <Route path="/leads/rules" element={<LeadRules />} />
+        <Route path="/leads/:id" element={<LeadDetail />} />
         <Route path="/integrations" element={<Integrations />} />
         <Route path="/executions" element={<Executions />} />
         <Route path="/executions/:id" element={<ExecutionDetail />} />

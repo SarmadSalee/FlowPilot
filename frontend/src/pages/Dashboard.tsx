@@ -9,8 +9,8 @@ import {
 } from "recharts";
 import { api } from "@/lib/api";
 import { Badge, Card, CardHeader, PageLoader, Skeleton } from "@/components/ui";
-import { cn, timeAgo, fmtNum } from "@/lib/utils";
-import type { DashboardData } from "@/lib/types";
+import { cn, timeAgo, fmtNum, scoreColor, intentColor } from "@/lib/utils";
+import type { DashboardData, LeadAnalytics } from "@/lib/types";
 
 const toolTipStyle = {
   background: "rgb(var(--c-surface))",
@@ -20,6 +20,73 @@ const toolTipStyle = {
   fontSize: 12,
   color: "rgb(var(--c-text))",
 };
+
+function LeadIntelligence() {
+  const nav = useNavigate();
+  const an = useQuery<LeadAnalytics>({
+    queryKey: ["lead-analytics"],
+    queryFn: () => api("/api/leads/analytics"),
+  });
+
+  if (an.isLoading) {
+    return (
+      <Card>
+        <CardHeader title="Lead intelligence" subtitle="Real-time AI scoring" />
+        <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16" />)}
+        </div>
+      </Card>
+    );
+  }
+
+  const s = an.data?.summary;
+  const stats = [
+    { label: "Total leads", value: s?.totalLeads ?? 0, color: "#4F46E5" },
+    { label: "Avg score", value: s?.avgScore ?? "—", color: scoreColor(s?.avgScore ?? 0) },
+    { label: "High intent", value: s?.highIntent ?? 0, color: intentColor("high") },
+    { label: "Hot + warm", value: (s?.hot ?? 0) + (s?.warm ?? 0), color: "#DC2626" },
+  ];
+  const hottest = an.data?.trending.hottest?.[0];
+
+  return (
+    <Card className="lg:col-span-3">
+      <CardHeader
+        title="Lead intelligence"
+        subtitle="AI-scored pipeline health"
+        action={
+          <Link to="/leads" className="flex items-center gap-1 text-xs font-semibold text-primary-soft hover:underline">
+            View leads <ChevronRight className="size-3.5" />
+          </Link>
+        }
+      />
+      <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_2fr]">
+        {stats.map((st) => (
+          <div key={st.label} className="rounded-xl border border-line bg-surface-soft/50 p-4">
+            <p className="font-display text-2xl font-bold leading-none" style={{ color: st.color }}>{st.value}</p>
+            <p className="mt-1.5 text-xs font-medium text-ink-dim">{st.label}</p>
+          </div>
+        ))}
+        <div className="rounded-xl border border-primary/30 bg-primary-faint/40 p-4">
+          <div className="flex items-center justify-between gap-2">
+            <p className="truncate text-xs font-semibold text-ink">{hottest?.name ?? "No trending lead"}</p>
+            {hottest && (
+              <button onClick={() => hottest.leadId && nav(`/leads/${hottest.leadId}`)}
+                className="shrink-0 rounded p-0.5 text-primary hover:bg-primary/10">
+                <ChevronRight className="size-3.5" />
+              </button>
+            )}
+          </div>
+          <p className="mt-0.5 truncate text-[11px] text-ink-faint">{hottest?.company ?? "Hottest lead this week"}</p>
+          {hottest && (
+            <p className="mt-2 font-mono text-sm font-semibold" style={{ color: scoreColor(hottest.score) }}>
+              {hottest.movement > 0 ? "+" : ""}{hottest.movement} pts → {hottest.score}
+            </p>
+          )}
+        </div>
+      </div>
+    </Card>
+  );
+}
 
 export default function Dashboard() {
   const nav = useNavigate();
@@ -75,6 +142,10 @@ export default function Dashboard() {
             </Card>
           );
         })}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <LeadIntelligence />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">

@@ -17,6 +17,7 @@ import {
   Menu,
   Zap,
   Loader2,
+  Target,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useAuth from "@/store/auth";
@@ -40,7 +41,11 @@ const NAV = [
   },
   {
     section: "Intelligence",
-    items: [{ to: "/agents", label: "Agents", icon: Bot }],
+    items: [
+      { to: "/agents", label: "Agents", icon: Bot },
+      { to: "/leads", label: "Leads", icon: Target },
+      { to: "/leads/rules", label: "Scoring Rules", icon: Zap },
+    ],
   },
   {
     section: "Connect",
@@ -286,6 +291,8 @@ function Breadcrumb({ path }: { path: string }) {
     workflows: "Workflows",
     "ai/create": "AI Creator",
     agents: "Agents",
+    leads: "Leads",
+    "leads/rules": "Scoring Rules",
     integrations: "Integrations",
     executions: "Executions",
     analytics: "Analytics",
@@ -299,7 +306,8 @@ function Breadcrumb({ path }: { path: string }) {
     <div className="flex items-center gap-2 text-sm">
       {segments.map((seg, i) => {
         const label =
-          map[segments.slice(0, i + 1).join("/")] ?? seg.charAt(0).toUpperCase() + seg.slice(1);
+          map[segments.slice(0, i + 1).join("/")] ??
+          (/^[0-9a-fA-F]{24}$/.test(seg) ? "Lead detail" : seg.charAt(0).toUpperCase() + seg.slice(1));
         const last = i === segments.length - 1;
         return (
           <React.Fragment key={seg + i}>

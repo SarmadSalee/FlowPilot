@@ -242,3 +242,263 @@ export interface API<T = unknown> {
   data: T;
   error?: string;
 }
+
+/* ---------- Lead intelligence ---------- */
+
+export type LeadIntent = "low" | "medium" | "high";
+export type LeadQualification = "hot" | "warm" | "cold" | "qualified" | "unqualified";
+export type LeadStage = "awareness" | "interest" | "consideration" | "evaluation" | "decision" | "customer";
+export type LeadStatus = "new" | "contacted" | "qualified" | "unqualified" | "converted" | "lost" | "spam";
+
+export interface Lead {
+  _id: string;
+  name: string;
+  email?: string;
+  company?: string;
+  jobTitle?: string;
+  industry?: string;
+  companySize?: string;
+  location?: string;
+  website?: string;
+  revenue?: number;
+  source?: string;
+  leadType?: string;
+  phone?: string;
+  whatsapp?: string;
+  score: number;
+  icpScore: number;
+  engagementScore: number;
+  intentScore: number;
+  grade: "A" | "B" | "C" | "D";
+  intent: LeadIntent;
+  qualification: LeadQualification;
+  buyingStage: LeadStage;
+  confidence: number;
+  status: LeadStatus;
+  tags: string[];
+  customData?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+  unsubscribed?: boolean;
+  firstSeenAt?: string;
+  lastActivityAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ScoreFactor {
+  label: string;
+  delta: number;
+  kind: "positive" | "negative" | "neutral";
+  source?: string;
+}
+
+export interface LeadScore {
+  _id: string;
+  leadId: string;
+  score: number;
+  grade: "A" | "B" | "C" | "D";
+  intent: LeadIntent;
+  qualification: LeadQualification;
+  buyingStage: LeadStage;
+  confidence: number;
+  icpMatch: number;
+  engagement: number;
+  buyingIntent: number;
+  factors: ScoreFactor[];
+  summary?: string;
+  explanation?: string;
+  recommendedAction?: {
+    title: string;
+    steps: string[];
+    urgency: string;
+  };
+  provider: string;
+  model: string;
+  analyzedAt: string;
+  createdAt: string;
+}
+
+export interface LeadAnalysis {
+  _id: string;
+  leadId: string;
+  score: number;
+  intent: LeadIntent;
+  qualification: LeadQualification;
+  buyingStage: LeadStage;
+  confidence: number;
+  reasons: string[];
+  summary?: string;
+  recommendedAction?: string;
+  recommendedSteps: string[];
+  source: string;
+  provider: string;
+  model: string;
+  createdAt: string;
+}
+
+export interface LeadEvent {
+  _id: string;
+  leadId: string;
+  type: string;
+  channel?: string;
+  payload?: Record<string, unknown>;
+  scoreDelta?: number;
+  detectedIntent?: string;
+  processed?: boolean;
+  processedAt?: string;
+  createdAt: string;
+}
+
+export interface LeadScoreHistoryEntry {
+  _id: string;
+  leadId: string;
+  score: number;
+  previousScore: number;
+  delta: number;
+  reason?: string;
+  source: string;
+  eventType?: string;
+  createdAt: string;
+}
+
+export interface LeadTimelineItem {
+  kind: "score" | "event";
+  id: string;
+  at: string;
+  score?: number;
+  previousScore?: number;
+  delta?: number;
+  reason: string;
+  source?: string;
+  eventType?: string;
+  type?: string;
+  channel?: string;
+  scoreDelta?: number;
+  detectedIntent?: string;
+}
+
+export interface LeadListResult {
+  leads: Lead[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface LeadDetail {
+  lead: Lead;
+  score?: LeadScore | null;
+  analyses: LeadAnalysis[];
+  history: LeadScoreHistoryEntry[];
+  events: LeadEvent[];
+}
+
+export interface RuleCondition {
+  field: string;
+  operator: "gte" | "gt" | "lte" | "lt" | "eq" | "contains" | "exists" | "truthy" | "in";
+  value?: unknown;
+}
+
+export interface RuleAction {
+  type:
+    | "increase"
+    | "decrease"
+    | "set"
+    | "set_intent"
+    | "set_qualification"
+    | "set_stage"
+    | "notify"
+    | "add_tag"
+    | "remove_tag"
+    | "trigger_workflow"
+    | "stop"
+    | "unsubscribe";
+  value?: unknown;
+  target?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface ScoringRule {
+  _id: string;
+  name: string;
+  description?: string;
+  trigger: "lead_created" | "lead_event" | "score_threshold" | "ai_analysis";
+  eventType?: string;
+  conditions: RuleCondition[];
+  action: RuleAction;
+  priority: number;
+  enabled: boolean;
+  source: "builtin" | "user" | "ai";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ICPProfile {
+  _id: string;
+  name: string;
+  industries: string[];
+  companySizeMin?: number;
+  companySizeMax?: number;
+  locations: string[];
+  jobTitles: string[];
+  minRevenue?: number;
+  minEmployees?: number;
+  technologies: string[];
+  keywords: string[];
+  customCriteria?: Record<string, unknown>;
+  enabled: boolean;
+  createdAt: string;
+}
+
+export interface LeadAnalytics {
+  summary: {
+    totalLeads: number;
+    avgScore: number;
+    avgIcpScore: number;
+    hot: number;
+    warm: number;
+    cold: number;
+    qualified: number;
+    unqualified: number;
+    highIntent: number;
+    converted: number;
+    scoreChanges24h: number;
+    newLeads7d: number;
+    positiveChanges7d: number;
+  };
+  distribution: { label: string; min: number; max: number; count: number }[];
+  conversion: { label: string; min: number; max: number; total: number; converted: number; conversionRate: number }[];
+  topSources: { source: string; count: number; avgScore: number }[];
+  trending: {
+    hottest: { leadId: string; name: string; company?: string; score: number; movement: number; changes: number }[];
+    coldest: { leadId: string; name: string; company?: string; score: number; movement: number; changes: number }[];
+  };
+  trend: { date: string; newLeads: number; avgScore: number; scoreChanges: number }[];
+}
+
+export interface LeadStreamEvent {
+  type: string;
+  leadId?: string;
+  leadName?: string;
+  eventId?: string;
+  score?: number;
+  previousScore?: number;
+  delta?: number;
+  reason?: string;
+  eventType?: string;
+  at: string;
+  lead?: Lead;
+}
+
+export interface LeadOutcome {
+  leadId: string;
+  score: number;
+  previousScore: number;
+  delta: number;
+  intent?: LeadIntent;
+  qualification?: LeadQualification;
+  stage?: LeadStage;
+  reasons: string[];
+  matchedRules: string[];
+  workflowsTriggered: string[];
+  notificationsSent: string[];
+}

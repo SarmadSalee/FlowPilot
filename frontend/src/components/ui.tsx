@@ -22,6 +22,16 @@ const BADGE_MAP: Record<string, { fg: string; bg: string }> = {
   archived: { fg: "#475467", bg: "#F2F4F7" },
   disabled: { fg: "#475467", bg: "#F2F4F7" },
   inactive: { fg: "#475467", bg: "#F2F4F7" },
+  new: { fg: "#1D4ED8", bg: "#EFF6FF" },
+  contacted: { fg: "#1D4ED8", bg: "#EFF6FF" },
+  unqualified: { fg: "#475467", bg: "#F2F4F7" },
+  lost: { fg: "#475467", bg: "#F2F4F7" },
+  spam: { fg: "#B91C1C", bg: "#FEF2F2" },
+  converted: { fg: "#15803D", bg: "#F0FDF4" },
+  hot: { fg: "#B91C1C", bg: "#FEF2F2" },
+  warm: { fg: "#B45309", bg: "#FFFBEB" },
+  cold: { fg: "#0369A1", bg: "#F0F9FF" },
+  medium: { fg: "#B45309", bg: "#FFFBEB" },
 };
 
 export function Badge({

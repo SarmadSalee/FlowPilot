@@ -11,6 +11,7 @@ import { apiKeyRouter } from './apiKey';
 import { teamRouter } from './team';
 import { billingRouter } from './billing';
 import { notificationRouter } from './notification';
+import { leadRouter } from './lead';
 import { dashboardController } from '../controllers/dashboardController';
 import { NODE_DEFINITIONS } from '../automation/nodes';
 import { authenticate } from '../middleware/auth';
@@ -30,6 +31,7 @@ routes.use('/api-keys', apiKeyRouter);
 routes.use('/team', teamRouter);
 routes.use('/billing', billingRouter);
 routes.use('/notifications', notificationRouter);
+routes.use('/leads', leadRouter);
 routes.get('/nodes', (_req, res) => {
   res.json({ success: true, data: NODE_DEFINITIONS });
 });
